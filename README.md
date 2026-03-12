@@ -1,38 +1,47 @@
-# Automating AWS Infrastructure with CloudFormation (Modular Approach)
+# Infrastructure as Code: Modular AWS Deployment via CloudFormation
 
-## 📌 Project Overview
-This project demonstrates a professional approach to **Infrastructure as Code (IaC)**. I deployed a multi-layer architecture on AWS using **CloudFormation**, focusing on modularity, security, and data resilience.
+## Overview
+This project demonstrates an enterprise-grade approach to **Infrastructure as Code (IaC)** by deploying a decoupled, multi-tier architecture using AWS CloudFormation. The focus is on modularity, cross-stack resource sharing, and implementing lifecycle data protection policies.
 
-## 🏗️ Modular Architecture
-I decoupled the infrastructure into two distinct layers to ensure reusability:
-1.  **Networking Layer**: [lab-network.yaml](./templates/lab-network.yaml) - Deploys a custom VPC, Public Subnets, and IGW.
-2.  **Application Layer**: [lab-application.yaml](./templates/lab-application.yaml) - Deploys an Apache Web Server on EC2, dynamically importing network values from the first stack.
+## Modular Infrastructure Design
+The architecture is decoupled into independent layers to enhance reusability and simplify maintenance:
 
-## 🚀 Key Technical Features
-* **Cross-Stack Referencing**: Used `Fn::ImportValue` to link the application stack to the network stack dynamically.
-* **Safe Updates**: Performed a stack update using **Change Sets** to enable HTTPS (Port 443) without resource replacement.
-* **Visual Architecture**: Analyzed and modified the design using **AWS Infrastructure Composer**.
-* **Data Protection**: Implemented a `DeletionPolicy: Snapshot` on the EBS volume to ensure data persistence even after stack deletion.
+* **Networking Layer:** ([lab-network.yaml](./templates/lab-network.yaml)) - Provisions a custom VPC, Public Subnets, Route Tables, and an Internet Gateway (IGW).
+* **Application Layer:** ([lab-application.yaml](./templates/lab-application.yaml)) - Deploys an Apache Web Server on EC2. This stack dynamically consumes outputs from the Networking stack using `Fn::ImportValue`.
 
-## 📸 Implementation Gallery
+## Technical Implementations
 
-### 1. Successful Stack Deployment
+### Cross-Stack Referencing
+Leveraged CloudFormation **Outputs** and **Exports** to link stacks. This ensures that the application layer is always synced with the underlying network topology without hardcoding IDs.
+
+### Change Set Management & Security Updates
+Implemented security enhancements (Enabling HTTPS/Port 443) using **CloudFormation Change Sets**. This allowed for a dry-run analysis of impact before execution, ensuring zero-downtime and preventing accidental resource replacement.
+
+### Infrastructure Visualization
+Utilized **AWS Infrastructure Composer** to validate the logical relationship between resources and ensure architectural alignment.
+
+### Data Persistence Policy
+To ensure business continuity, a `DeletionPolicy: Snapshot` was applied to the EBS volumes. This guarantees that a point-in-time recovery point is created automatically if the stack is decommissioned.
+
+## Implementation Gallery
+
+### 1. CloudFormation Stack Lifecycle
 ![CloudFormation Stacks](./screenshots/Stacks.png)
-*Both Networking and Application stacks in CREATE_COMPLETE status*.
+*Execution status: All stacks verified in CREATE_COMPLETE state.*
 
-### 2. Infrastructure Visualization
+### 2. Architectural Visualization
 ![Infrastructure Composer](./screenshots/Infrastructure%20Composer.png)
-*Logical view of resources via AWS Infrastructure Composer*.
+*Resource dependency mapping via AWS Infrastructure Composer.*
 
-### 3. Security Group Update (Port 443)
+### 3. Security Group Ingress Update
 ![Security Group](./screenshots/Update%20security%20group.png)
-*Adding HTTPS support through a documented stack update*.
+*Verification of inbound rule updates for HTTPS (TCP/443) via Change Set.*
 
-### 4. Backup Verification (EBS Snapshot)
+### 4. Automated Backup (EBS Snapshot)
 ![EBS Snapshot](./screenshots/Snapshot.png)
-*Snapshot created automatically based on the DeletionPolicy*.
+*Validation of snapshot generation triggered by the DeletionPolicy.*
 
-## 🛠️ Tools Used
-* **Cloud Provider**: AWS (VPC, EC2, CloudFormation, S3)
-* **IaC**: YAML
-* **Visualization**: AWS Infrastructure Composer
+## Technical Stack
+* **Provider:** Amazon Web Services (VPC, EC2, CloudFormation)
+* **Language:** YAML (IaC)
+* **Architectural Tooling:** AWS Infrastructure Composer
